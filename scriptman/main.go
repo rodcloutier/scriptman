@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/rodcloutier/scriptman/cmd"
+import "github.com/rodcloutier/scriptman/scriptman/cmd"
 
 func main() {
 	cmd.Execute()

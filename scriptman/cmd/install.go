@@ -22,7 +22,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/rodcloutier/scriptman/pkg"
+	"github.com/rodcloutier/scriptman"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
