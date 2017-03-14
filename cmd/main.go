@@ -1,15 +1,18 @@
 package main
 
 import (
-	// "fmt"
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
-	"path/filepath"
+
+	"github.com/rodcloutier/scriptman/pkg"
 )
 
 type Requirement struct {
@@ -57,6 +60,7 @@ func ensureDir(dir string) error {
 	return nil
 }
 
+// TODO return the sha of the current commit
 func clone(repository, fullDestination string) error {
 
 	cwd, err := os.Getwd()
@@ -85,11 +89,10 @@ func clone(repository, fullDestination string) error {
 		log.Printf("Failed to checkout master")
 		return err
 	}
-
 	return err
 }
 
-func processRequirement(req Requirement) error {
+func installRequirement(req Requirement) error {
 
 	var err error
 
@@ -99,11 +102,32 @@ func processRequirement(req Requirement) error {
 	}
 
 	repository := req.RepositoryURL()
-
-	// clone the repo
 	if err = clone(repository, destination); err != nil {
 		return err
 	}
+	return nil
+}
+
+func install(project Project) error {
+
+	var err error
+	for _, req := range project.Requirements {
+		err = installRequirement(req)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func env(project Project) error {
+	paths := []string{}
+	for _, req := range project.Requirements {
+		paths = append(paths, req.FullDestination())
+	}
+	paths = append(paths, "$PATH")
+
+	fmt.Println("export PATH=" + strings.Join(paths, ":"))
 
 	return nil
 }
@@ -125,9 +149,7 @@ func main() {
 		panic(err)
 	}
 
-	for _, req := range project.Requirements {
-		err = processRequirement(req)
-	}
+	env(project)
 
 	if err != nil {
 		panic(err)
