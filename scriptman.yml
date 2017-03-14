@@ -1,0 +1,4 @@
+requirements:
+- package: github.com/foo/bar
+  version: 1.0
+  repo: ./examples/git_repo/
